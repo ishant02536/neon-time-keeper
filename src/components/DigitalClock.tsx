@@ -1,16 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import WorldClock from './WorldClock';
+import CalendarDisplay from './CalendarDisplay';
+import CustomTimeSettings from './CustomTimeSettings';
+import AlarmFeature from './AlarmFeature';
 
 const DigitalClock = () => {
   const [time, setTime] = useState(new Date());
+  const [customTime, setCustomTime] = useState<Date | null>(null);
+  const [activeMode, setActiveMode] = useState<'main' | 'world' | 'calendar' | 'custom' | 'alarm'>('main');
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+    if (!customTime) {
+      const timer = setInterval(() => {
+        setTime(new Date());
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [customTime]);
 
   const formatTime = (date: Date) => {
     const hours = date.getHours().toString().padStart(2, '0');
@@ -19,15 +27,81 @@ const DigitalClock = () => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
+  const displayTime = customTime || time;
+
+  const renderActiveComponent = () => {
+    switch (activeMode) {
+      case 'world':
+        return <WorldClock />;
+      case 'calendar':
+        return <CalendarDisplay />;
+      case 'custom':
+        return <CustomTimeSettings onTimeChange={setCustomTime} />;
+      case 'alarm':
+        return <AlarmFeature />;
+      default:
+        return (
+          <div className="bg-black rounded-lg p-8 shadow-2xl border border-gray-700">
+            <div className="text-6xl md:text-8xl font-mono text-green-400 tracking-widest digital-glow text-center">
+              {formatTime(displayTime)}
+            </div>
+            <div className="text-center mt-4 text-gray-400 text-sm uppercase tracking-wider">
+              {customTime ? 'Custom Time' : 'Digital Clock'}
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="bg-black rounded-lg p-8 shadow-2xl border border-gray-700">
-        <div className="text-6xl md:text-8xl font-mono text-green-400 tracking-widest digital-glow">
-          {formatTime(time)}
-        </div>
-        <div className="text-center mt-4 text-gray-400 text-sm uppercase tracking-wider">
-          Digital Clock
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
+      {/* Navigation */}
+      <div className="mb-6 flex flex-wrap gap-2 justify-center">
+        <Button
+          onClick={() => setActiveMode('main')}
+          variant={activeMode === 'main' ? 'default' : 'outline'}
+          className={activeMode === 'main' ? 'bg-green-600' : 'border-green-400 text-green-400'}
+        >
+          Main Clock
+        </Button>
+        <Button
+          onClick={() => setActiveMode('world')}
+          variant={activeMode === 'world' ? 'default' : 'outline'}
+          className={activeMode === 'world' ? 'bg-green-600' : 'border-green-400 text-green-400'}
+        >
+          World Clock
+        </Button>
+        <Button
+          onClick={() => setActiveMode('calendar')}
+          variant={activeMode === 'calendar' ? 'default' : 'outline'}
+          className={activeMode === 'calendar' ? 'bg-green-600' : 'border-green-400 text-green-400'}
+        >
+          Calendar
+        </Button>
+        <Button
+          onClick={() => setActiveMode('custom')}
+          variant={activeMode === 'custom' ? 'default' : 'outline'}
+          className={activeMode === 'custom' ? 'bg-green-600' : 'border-green-400 text-green-400'}
+        >
+          Custom Time
+        </Button>
+        <Button
+          onClick={() => setActiveMode('alarm')}
+          variant={activeMode === 'alarm' ? 'default' : 'outline'}
+          className={activeMode === 'alarm' ? 'bg-green-600' : 'border-green-400 text-green-400'}
+        >
+          Alarms
+        </Button>
+      </div>
+
+      {/* Active Component */}
+      <div className="w-full max-w-4xl">
+        {renderActiveComponent()}
+      </div>
+
+      {/* Footer */}
+      <div className="mt-6 text-center text-gray-500 text-xs">
+        Current Time: {formatTime(time)} {customTime && '(Real Time)'}
       </div>
     </div>
   );
