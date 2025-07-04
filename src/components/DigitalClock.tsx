@@ -55,6 +55,14 @@ const DigitalClock = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
+      {/* Header with Creator Credit */}
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse digital-glow-text">
+          Made by Isha Tiwari
+        </h1>
+        <div className="mt-2 h-1 w-32 mx-auto bg-gradient-to-r from-green-400 to-blue-500 rounded-full"></div>
+      </div>
+
       {/* Navigation */}
       <div className="mb-6 flex flex-wrap gap-2 justify-center">
         <Button
